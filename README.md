@@ -1,6 +1,8 @@
 # vcv-rackthemer
-This library adds runtime theming functionality with support for multiple themes being used at the same time.  
-The library is based on [svg_theme by Paul Dempsey](https://github.com/Paul-Dempsey/svg_theme). It improves upon it by implementing a `ThemedSvg` struct instead of modifying the SVG data in memory, and adding extra features where possible.  
+This library adds runtime theming functionality with support for multiple themes being used at the same time.
+
+The library is based on [svg_theme by Paul Dempsey](https://github.com/Paul-Dempsey/svg_theme). It improves upon it by implementing a `ThemedSvg` struct instead of modifying the SVG data in memory, and adding extra features where possible.
+
 [vcv-svghelper by Dustin Lacewell](https://github.com/dustinlacewell/vcv-svghelper) is also included for convenience, and has been modified to work seamlessly with `ThemedSvg`.
 
 # Compilation
