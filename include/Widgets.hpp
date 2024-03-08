@@ -42,18 +42,17 @@ namespace widgets {
         void onThemeChanged (std::shared_ptr<rack_themer::RackTheme> theme) override;
     };
 
-    struct SvgPanel : rack::widget::Widget, IThemedWidget {
-        rack::widget::FramebufferWidget* fb;
-        SvgWidget* sw;
+    struct SvgPanel : rack::widget::Widget {
+        rack::widget::FramebufferWidget* framebuffer;
+        SvgWidget* svgWidget;
         rack::app::PanelBorder* panelBorder;
-        ThemedSvg svg;
-        bool autoSwitchTheme = true;
 
         SvgPanel ();
-        void step () override;
-        void setBackground (ThemedSvg svg);
 
-        void onThemeChanged (std::shared_ptr<rack_themer::RackTheme> theme) override;
+        void step () override;
+        void setBackground (std::shared_ptr<ThemeableSvg> svg) { setBackground (ThemedSvg (svg, svgWidget->svg.theme)); }
+        void setBackground (ThemedSvg svg);
+    };
     };
 }
 }

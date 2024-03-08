@@ -21,53 +21,47 @@
 
 namespace rack_themer {
 namespace widgets {
+    /*
+     * SvgWidget
+     */
     void SvgWidget::onThemeChanged (std::shared_ptr<rack_themer::RackTheme> theme) {
         if (autoSwitchTheme)
             svg = svg.withTheme (theme);
     }
 
-    SvgPanel::SvgPanel () : svg (nullptr, nullptr) {
-        fb = new rack::widget::FramebufferWidget;
-        addChild (fb);
+    /*
+     * SvgPanel
+     */
+    SvgPanel::SvgPanel () {
+        framebuffer = new rack::widget::FramebufferWidget;
+        addChild (framebuffer);
 
-        sw = new SvgWidget;
-        fb->addChild (sw);
+        svgWidget = new SvgWidget;
+        framebuffer->addChild (svgWidget);
 
         panelBorder = new rack::app::PanelBorder;
-        fb->addChild (panelBorder);
+        framebuffer->addChild (panelBorder);
     }
 
-
     void SvgPanel::step () {
-        if (APP->window->pixelRatio < 2.0)
-            // Small details draw poorly at low DPI, so oversample when drawing to the framebuffer
-            fb->oversample = 2.0;
-        else
-            fb->oversample = 1.0;
+        // Small details draw poorly at low DPI, so oversample when drawing to the framebuffer
+        framebuffer->oversample = APP->window->pixelRatio < 2.0 ? 2.0 : 1.0;
 
         Widget::step ();
     }
 
-
     void SvgPanel::setBackground (ThemedSvg svg) {
-        if (svg == this->svg)
+        if (svg == svgWidget->svg)
             return;
 
-        this->svg = svg;
-
-        sw->setSvg (svg);
+        svgWidget->setSvg (svg);
 
         // Round framebuffer size to nearest grid
-        fb->box.size = sw->box.size.div (rack::app::RACK_GRID_SIZE).round ().mult (rack::app::RACK_GRID_SIZE);
-        panelBorder->box.size = fb->box.size;
-        box.size = fb->box.size;
+        framebuffer->box.size = svgWidget->box.size.div (rack::app::RACK_GRID_SIZE).round ().mult (rack::app::RACK_GRID_SIZE);
+        panelBorder->box.size = framebuffer->box.size;
+        box.size = framebuffer->box.size;
 
-        fb->setDirty ();
-    }
-
-    void SvgPanel::onThemeChanged (std::shared_ptr<rack_themer::RackTheme> theme) {
-        if (autoSwitchTheme)
-            svg = svg.withTheme (theme);
+        framebuffer->setDirty ();
     }
 }
 }
