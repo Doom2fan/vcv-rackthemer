@@ -63,5 +63,36 @@ namespace widgets {
 
         framebuffer->setDirty ();
     }
+
+    /*
+     * SvgPort
+     */
+    SvgPort::SvgPort () {
+        framebuffer = new rack::widget::FramebufferWidget;
+        addChild (framebuffer);
+
+        shadow = new rack::app::CircularShadow;
+        framebuffer->addChild (shadow);
+        // Avoid breakage if plugins fail to call `setSvg ()`
+        // In that case, just disable the shadow.
+        shadow->box.size = rack::math::Vec ();
+
+        svgWidget = new SvgWidget;
+        framebuffer->addChild (svgWidget);
+    }
+
+    void SvgPort::setSvg (ThemedSvg svg) {
+        if (svg == svgWidget->svg)
+            return;
+
+        svgWidget->setSvg (svg);
+        box.size = framebuffer->box.size = svgWidget->box.size;
+
+        // Move shadow downward by 10%
+        shadow->box.size = svgWidget->box.size;
+        shadow->box.pos = rack::math::Vec (0, svgWidget->box.size.y * .1f);
+
+        framebuffer->setDirty ();
+    }
 }
 }

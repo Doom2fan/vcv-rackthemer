@@ -53,6 +53,14 @@ namespace widgets {
         void setBackground (std::shared_ptr<ThemeableSvg> svg) { setBackground (ThemedSvg (svg, svgWidget->svg.theme)); }
         void setBackground (ThemedSvg svg);
     };
+
+    struct SvgPort : rack::app::PortWidget {
+        rack::widget::FramebufferWidget* framebuffer;
+        rack::app::CircularShadow* shadow;
+        SvgWidget* svgWidget;
+
+        SvgPort ();
+        void setSvg (ThemedSvg svg);
     };
 }
 }
