@@ -18,8 +18,6 @@
  */
 
 #include "ThemeLoader.hpp"
-#include "color.hpp"
-#include "nanovg.h"
 
 namespace rack_themer {
     ThemeLoader themeLoader;

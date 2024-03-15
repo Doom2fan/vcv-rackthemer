@@ -40,9 +40,7 @@ namespace rack_themer {
         ThemedSvg withTheme (std::shared_ptr<RackTheme> theme) { return ThemedSvg (svg, theme); }
 
         /*
-         *
          * ThemeableSvg passthroughs.
-         *
          */
         rack::math::Vec getSize () { return svg != nullptr ? svg->getSize () : 0; }
         int getNumShapes () { return svg != nullptr ? svg->getNumShapes () : 0; }

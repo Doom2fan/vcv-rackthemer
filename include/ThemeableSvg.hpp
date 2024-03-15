@@ -45,10 +45,8 @@ namespace rack_themer {
         void draw (NVGcontext* vg, std::shared_ptr<RackTheme> theme);
 
         /*
-        *
-        * FOR INTERNAL USE ONLY! DO NOT USE!
-        *
-        */
+         * FOR INTERNAL USE ONLY! DO NOT USE!
+         */
         void forEachShape (const std::function<void (NSVGshape*)>& callback);
     };
 

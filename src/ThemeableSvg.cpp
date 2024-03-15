@@ -20,8 +20,6 @@
 #include "ThemeableSvg.hpp"
 #include "KeyedString.hpp"
 #include "ThemeCache.hpp"
-#include "color.hpp"
-#include "nanosvg.h"
 
 namespace rack_themer {
     std::shared_ptr<ThemeableSvg> loadSvg (const std::string& path) { return themeCache.getSvg (path); }
