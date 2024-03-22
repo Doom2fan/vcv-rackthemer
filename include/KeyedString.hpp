@@ -32,14 +32,14 @@ namespace rack_themer {
 
       public:
         bool operator== (const KeyedString& rhs) const { return value == rhs.value; }
-        std::size_t getHash () const { return std::hash<int> {} ((int) value); }
+        std::size_t getHash () const { return std::hash<int> {} (static_cast<int> (value)); }
     };
 
     KeyedString getKeyedString (const std::string& text);
     std::string getKeyedStringText (const KeyedString& key);
 }
 
-template <>
+template<>
 struct std::hash<rack_themer::KeyedString> {
     std::size_t operator() (const rack_themer::KeyedString& k) const { return k.getHash (); }
 };

@@ -30,14 +30,14 @@
 #include <regex>
 
 namespace rack_themer {
-    template <class TPanel = widgets::SvgPanel>
+    template<class TPanel = widgets::SvgPanel>
     TPanel* createPanel (ThemedSvg svg) {
         auto panel = new TPanel;
         panel->setBackground (svg);
         return panel;
     }
 
-    template <typename T>
+    template<typename T>
     struct SvgHelper {
     private:
         ThemedSvg svg;

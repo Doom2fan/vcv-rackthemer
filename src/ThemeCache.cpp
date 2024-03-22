@@ -55,24 +55,21 @@ namespace rack_themer {
     }
 
     std::shared_ptr<RackTheme> ThemeCache::getRackTheme (const std::string& path) {
-        auto themeSearch = themeCache.find (path);
-        if (themeSearch != themeCache.end ())
+        if (auto themeSearch = themeCache.find (path); themeSearch != themeCache.end ())
             return themeSearch->second;
 
         return createRackTheme (path);
     }
 
     std::shared_ptr<ThemeableSvg> ThemeCache::getSvg (const std::string& path) {
-        auto svgSearch = svgCache.find (path);
-        if (svgSearch != svgCache.end ())
+        if (auto svgSearch = svgCache.find (path); svgSearch != svgCache.end ())
             return svgSearch->second;
 
         return createThemeableSvg (path);
     }
 
     ShapeInfo ThemeCache::getShapeInfo (const NSVGshape* shape) {
-        auto infoSearch = shapeInfoMap.find (shape);
-        if (infoSearch != shapeInfoMap.end ())
+        if (auto infoSearch = shapeInfoMap.find (shape); infoSearch != shapeInfoMap.end ())
             return infoSearch->second;
 
         auto id = std::string (shape->id);
@@ -90,8 +87,7 @@ namespace rack_themer {
     }
 
     KeyedString ThemeCache::getKeyedString (const std::string& text) {
-        auto keySearch = stringCache.find (text);
-        if (keySearch != stringCache.end ())
+        if (auto keySearch = stringCache.find (text); keySearch != stringCache.end ())
             return keySearch->second;
 
         KeyedString key;
@@ -102,7 +98,9 @@ namespace rack_themer {
     }
 
     std::string ThemeCache::getKeyedStringText (const KeyedString& key) {
-        auto stringSearch = keyStringMap.find (key);
-        return stringSearch != keyStringMap.end () ? stringSearch->second : nullptr;
+        if (auto stringSearch = keyStringMap.find (key); stringSearch != nullptr)
+            return stringSearch->second;
+
+        return nullptr;
     }
 }

@@ -24,17 +24,15 @@ namespace rack_themer {
     std::shared_ptr<RackTheme> getNullTheme () { return themeCache.getRackTheme (""); }
     std::shared_ptr<RackTheme> loadRackTheme (const std::string& path) { return themeCache.getRackTheme (path); }
 
-    std::shared_ptr<Style> RackTheme::getIdStyle (const KeyedString& name) const{
-        auto found = idStyles.find (name);
-        if (found != idStyles.end ())
+    std::shared_ptr<Style> RackTheme::getIdStyle (const KeyedString& name) const {
+        if (auto found = idStyles.find (name); found != idStyles.end ())
             return found->second;
 
         return nullptr;
     }
 
-    std::shared_ptr<Style> RackTheme::getClassStyle (const KeyedString& name) const{
-        auto found = classStyles.find (name);
-        if (found != classStyles.end ())
+    std::shared_ptr<Style> RackTheme::getClassStyle (const KeyedString& name) const {
+        if (auto found = classStyles.find (name); found != classStyles.end ())
             return found->second;
 
         return nullptr;
