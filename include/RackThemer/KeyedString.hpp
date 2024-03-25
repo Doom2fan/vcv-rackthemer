@@ -30,11 +30,12 @@ namespace rack_themer {
         friend ThemeCache;
 
       private:
-        int value;
+        unsigned int value = 0;
 
       public:
+        bool isValid () { return value != 0; }
         bool operator== (const KeyedString& rhs) const { return value == rhs.value; }
-        std::size_t getHash () const { return std::hash<int> {} (static_cast<int> (value)); }
+        std::size_t getHash () const { return std::hash<unsigned int> {} (value); }
     };
 
     KeyedString getKeyedString (const std::string& text);
