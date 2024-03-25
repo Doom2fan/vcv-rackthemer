@@ -19,8 +19,7 @@
 
 #pragma once
 
-#include "Logging.hpp"
-#include "RackTheme.hpp"
+#include "rack_themer.hpp"
 
 #include <rack.hpp>
 

@@ -18,9 +18,7 @@
 
 #pragma once
 
-#include "KeyedString.hpp"
-#include "RackTheme.hpp"
-#include "ThemeableSvg.hpp"
+#include "rack_themer.hpp"
 
 #include <rack.hpp>
 

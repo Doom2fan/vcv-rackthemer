@@ -17,6 +17,7 @@
  */
 
 #include "ThemeCache.hpp"
+#include "rack_themer.hpp"
 #include "ThemeLoader.hpp"
 
 namespace rack_themer {

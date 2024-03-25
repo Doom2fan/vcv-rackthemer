@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include "Common.hpp"
 #include "KeyedString.hpp"
 #include "RackTheme.hpp"
 

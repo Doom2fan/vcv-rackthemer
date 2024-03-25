@@ -18,28 +18,8 @@
 
 #pragma once
 
-#include <functional>
-#include <string>
+#ifndef RACK_THEMER_H
+#error "Only rack_themer.hpp must be included. Including other headers is unsupported."
+#endif
 
-namespace rack_themer {
-    struct ThemeCache;
-
-    struct KeyedString {
-        friend ThemeCache;
-
-      private:
-        int value;
-
-      public:
-        bool operator== (const KeyedString& rhs) const { return value == rhs.value; }
-        std::size_t getHash () const { return std::hash<int> {} (static_cast<int> (value)); }
-    };
-
-    KeyedString getKeyedString (const std::string& text);
-    std::string getKeyedStringText (const KeyedString& key);
-}
-
-template<>
-struct std::hash<rack_themer::KeyedString> {
-    std::size_t operator() (const rack_themer::KeyedString& k) const { return k.getHash (); }
-};
+#include <rack.hpp>

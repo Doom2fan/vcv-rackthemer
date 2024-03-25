@@ -1,9 +1,6 @@
 /*
  *  RackThemer
  *  Copyright (C) 2024 Chronos "phantombeta" Ouroboros
- *  Copyright (C) 2016-2023 VCV [VCV source code: svg.cpp]
- *  Copyright (C) 2023 Paul Chase Dempsey pcdempsey@live.com [svg_theme]
- *  Copyright (C) 2023 Dustin Lacewell [vcv-svghelper]
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,16 +18,30 @@
 
 #pragma once
 
-#ifndef RACK_THEMER_H
-#define RACK_THEMER_H
+#include "Common.hpp"
 
-#include "RackThemer/Common.hpp"
-#include "RackThemer/KeyedString.hpp"
-#include "RackThemer/Logging.hpp"
-#include "RackThemer/RackTheme.hpp"
-#include "RackThemer/SvgHelper.hpp"
-#include "RackThemer/ThemeableSvg.hpp"
-#include "RackThemer/ThemedSvg.hpp"
-#include "RackThemer/Widgets.hpp"
+#include <functional>
+#include <string>
 
-#endif
+namespace rack_themer {
+    struct ThemeCache;
+
+    struct KeyedString {
+        friend ThemeCache;
+
+      private:
+        int value;
+
+      public:
+        bool operator== (const KeyedString& rhs) const { return value == rhs.value; }
+        std::size_t getHash () const { return std::hash<int> {} (static_cast<int> (value)); }
+    };
+
+    KeyedString getKeyedString (const std::string& text);
+    std::string getKeyedStringText (const KeyedString& key);
+}
+
+template<>
+struct std::hash<rack_themer::KeyedString> {
+    std::size_t operator() (const rack_themer::KeyedString& k) const { return k.getHash (); }
+};

@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include "Common.hpp"
 #include "RackTheme.hpp"
 #include "ThemeableSvg.hpp"
 

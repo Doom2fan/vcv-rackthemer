@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include "Common.hpp"
 #include "ThemeableSvg.hpp"
 #include "ThemedSvg.hpp"
 #include "Widgets.hpp"

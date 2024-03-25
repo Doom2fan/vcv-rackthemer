@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include "Common.hpp"
+
 #include <functional>
 #include <memory>
 #include <string>

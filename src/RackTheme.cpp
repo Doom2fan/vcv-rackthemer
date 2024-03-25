@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "RackTheme.hpp"
+#include "rack_themer.hpp"
 #include "ThemeCache.hpp"
 
 namespace rack_themer {
