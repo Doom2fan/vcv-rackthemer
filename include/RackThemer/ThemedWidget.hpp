@@ -26,8 +26,67 @@
 
 namespace rack_themer {
     void handleThemeChange (rack::Widget* widget, std::shared_ptr<RackTheme> theme, bool topLevel);
+    void performThemeRequest (rack::widget::Widget* parent);
 
     struct IThemedWidget {
         virtual void onThemeChanged (std::shared_ptr<RackTheme> theme) = 0;
+    };
+
+    struct IThemeHolder {
+        virtual void requestTheme () = 0;
+    };
+
+    template<typename T = rack::widget::Widget>
+    struct ThemedWidgetBase : T, IThemedWidget {
+      public:
+        typedef ThemedWidgetBase<T> _ThemedWidgetBase;
+
+      protected:
+        bool needTheme = true;
+
+      public:
+        void onAdd (const rack::event::Add& e) override {
+            T::onAdd (e);
+            needTheme = true;
+        }
+
+        void onRemove (const rack::event::Remove& e) override {
+            T::onRemove (e);
+            needTheme = true;
+        }
+
+        void step () override {
+            if (needTheme) {
+                performThemeRequest (this->parent);
+                needTheme = false;
+            }
+
+            T::step ();
+        }
+
+        void onThemeChanged (std::shared_ptr<RackTheme> theme) override { needTheme = false; }
+    };
+
+    template<typename T = rack::widget::Widget>
+    struct ThemeHolderWidgetBase : T, IThemeHolder {
+      public:
+        typedef ThemeHolderWidgetBase<T> _ThemeHolderWidgetBase;
+
+      protected:
+        bool themeRequested = true;
+
+        virtual std::shared_ptr<RackTheme> getTheme () = 0;
+
+      public:
+        void requestTheme () override { themeRequested = true; }
+
+        void step () override {
+            T::step ();
+
+            if (themeRequested) {
+                handleThemeChange (this, getTheme (), true);
+                themeRequested = false;
+            }
+        }
     };
 }

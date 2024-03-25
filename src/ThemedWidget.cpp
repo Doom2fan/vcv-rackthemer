@@ -34,4 +34,15 @@ namespace rack_themer {
             widget->onDirty (eDirty);
         }
     }
+
+    void performThemeRequest (rack::widget::Widget* parent) {
+        while (parent != nullptr) {
+            if (auto parentHolder = dynamic_cast<IThemeHolder*> (parent)) {
+                parentHolder->requestTheme ();
+                break;
+            }
+
+            parent = parent->parent;
+        }
+    }
 }
