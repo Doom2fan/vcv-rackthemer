@@ -88,6 +88,8 @@ namespace rack_themer {
 
         NVGcolor getColor () const { return isColor () ? color : rack::color::BLACK; }
         const Gradient* getGradient () const { return isGradient () ? &gradient : nullptr; }
+
+        NVGpaint getNVGPaint (const NVGpaint& basePaint) const;
     };
 
     struct Style {

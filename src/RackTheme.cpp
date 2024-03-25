@@ -38,6 +38,35 @@ namespace rack_themer {
         return nullptr;
     }
 
+    NVGpaint Paint::getNVGPaint (const NVGpaint& basePaint) const {
+        switch (kind) {
+            default:
+            case PaintKind::Unset:
+                return basePaint;
+
+            case PaintKind::None:
+                return NVGpaint ();
+
+            case PaintKind::Color: {
+                auto ret = NVGpaint ();
+                nvgTransformIdentity (ret.xform);
+                ret.radius = 0;
+                ret.feather = 1;
+                ret.innerColor = ret.outerColor = getColor ();
+                return ret;
+            }
+
+            case PaintKind::Gradient: {
+                auto ret = basePaint;
+                auto gradient = getGradient ();
+                ret.innerColor = gradient->stops [0].color;
+                ret.outerColor = gradient->stops [gradient->nstops].color;
+
+                return ret;
+            }
+        }
+    }
+
     Style Style::combineStyle (const Style& otherStyle) const {
         auto result = *this;
 
