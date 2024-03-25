@@ -21,6 +21,7 @@
 
 #include "Common.hpp"
 #include "ThemedSvg.hpp"
+#include "ThemedWidget.hpp"
 
 #include <rack.hpp>
 

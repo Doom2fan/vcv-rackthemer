@@ -1,9 +1,7 @@
-/*
+    /*
  *  RackThemer
  *  Copyright (C) 2024 Chronos "phantombeta" Ouroboros
- *  Copyright (C) 2016-2023 VCV [VCV source code: svg.cpp]
  *  Copyright (C) 2023 Paul Chase Dempsey pcdempsey@live.com [svg_theme]
- *  Copyright (C) 2023 Dustin Lacewell [vcv-svghelper]
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,17 +19,15 @@
 
 #pragma once
 
-#ifndef RACK_THEMER_H
-#define RACK_THEMER_H
+#include "Common.hpp"
+#include "RackTheme.hpp"
 
-#include "RackThemer/Common.hpp"
-#include "RackThemer/KeyedString.hpp"
-#include "RackThemer/Logging.hpp"
-#include "RackThemer/RackTheme.hpp"
-#include "RackThemer/SvgHelper.hpp"
-#include "RackThemer/ThemeableSvg.hpp"
-#include "RackThemer/ThemedSvg.hpp"
-#include "RackThemer/ThemedWidget.hpp"
-#include "RackThemer/Widgets.hpp"
+#include <rack.hpp>
 
-#endif
+namespace rack_themer {
+    void handleThemeChange (rack::Widget* widget, std::shared_ptr<RackTheme> theme, bool topLevel);
+
+    struct IThemedWidget {
+        virtual void onThemeChanged (std::shared_ptr<RackTheme> theme) = 0;
+    };
+}

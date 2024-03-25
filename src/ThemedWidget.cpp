@@ -1,9 +1,6 @@
 /*
  *  RackThemer
  *  Copyright (C) 2024 Chronos "phantombeta" Ouroboros
- *  Copyright (C) 2016-2023 VCV [VCV source code: svg.cpp]
- *  Copyright (C) 2023 Paul Chase Dempsey pcdempsey@live.com [svg_theme]
- *  Copyright (C) 2023 Dustin Lacewell [vcv-svghelper]
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,19 +16,22 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#include "rack_themer.hpp"
 
-#ifndef RACK_THEMER_H
-#define RACK_THEMER_H
+namespace rack_themer {
+    void handleThemeChange (rack::Widget* widget, std::shared_ptr<RackTheme> theme, bool topLevel) {
+        auto themedWidget = dynamic_cast<IThemedWidget*> (widget);
+        if (themedWidget != nullptr)
+            themedWidget->onThemeChanged (theme);
 
-#include "RackThemer/Common.hpp"
-#include "RackThemer/KeyedString.hpp"
-#include "RackThemer/Logging.hpp"
-#include "RackThemer/RackTheme.hpp"
-#include "RackThemer/SvgHelper.hpp"
-#include "RackThemer/ThemeableSvg.hpp"
-#include "RackThemer/ThemedSvg.hpp"
-#include "RackThemer/ThemedWidget.hpp"
-#include "RackThemer/Widgets.hpp"
+        for (auto child : widget->children)
+            handleThemeChange (child, theme, false);
 
-#endif
+        if (topLevel) {
+            rack::EventContext cDirty;
+            rack::Widget::DirtyEvent eDirty;
+            eDirty.context = &cDirty;
+            widget->onDirty (eDirty);
+        }
+    }
+}

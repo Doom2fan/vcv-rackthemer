@@ -85,26 +85,4 @@ namespace rack_themer {
 
         return result;
     }
-
-    void handleThemeChange (rack::Widget* widget, std::shared_ptr<RackTheme> theme, bool topLevel) {
-        auto themedWidget = dynamic_cast<IThemedWidget*> (widget);
-        if (themedWidget != nullptr)
-            themedWidget->onThemeChanged (theme);
-
-        for (auto child : widget->children) {
-            auto themedChild = dynamic_cast<IThemedWidget*> (child);
-            if (themedChild != nullptr)
-                themedChild->onThemeChanged (theme);
-
-            if (!child->children.empty ())
-                handleThemeChange (child, theme, false);
-        }
-
-        if (topLevel) {
-            rack::EventContext cDirty;
-            rack::Widget::DirtyEvent eDirty;
-            eDirty.context = &cDirty;
-            widget->onDirty (eDirty);
-        }
-    }
 }

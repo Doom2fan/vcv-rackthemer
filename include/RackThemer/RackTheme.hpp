@@ -169,11 +169,6 @@ namespace rack_themer {
         std::shared_ptr<Style> getClassStyle (const KeyedString& name) const;
     };
 
-    struct IThemedWidget {
-        virtual void onThemeChanged (std::shared_ptr<RackTheme> theme) = 0;
-    };
-
     std::shared_ptr<RackTheme> getNullTheme ();
     std::shared_ptr<RackTheme> loadRackTheme (const std::string& path);
-    void handleThemeChange (rack::Widget* widget, std::shared_ptr<RackTheme> theme, bool topLevel);
 }
