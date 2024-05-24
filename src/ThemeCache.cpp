@@ -99,7 +99,7 @@ namespace rack_themer {
     }
 
     std::string ThemeCache::getKeyedStringText (const KeyedString& key) {
-        if (auto stringSearch = keyStringMap.find (key); stringSearch != nullptr)
+        if (auto stringSearch = keyStringMap.find (key); stringSearch != keyStringMap.end ())
             return stringSearch->second;
 
         return nullptr;
