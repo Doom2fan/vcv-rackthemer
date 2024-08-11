@@ -48,6 +48,22 @@ namespace rack_themer {
             return static_cast<rack::app::ModuleWidget*> (t);
         }
 
+        rack::math::Rect getShapeBoundsBox (NSVGshape* shape) {
+            auto bounds = shape->bounds;
+            return rack::math::Rect (
+                bounds [0], bounds [1],
+                bounds [2] - bounds [0], bounds [3] - bounds [1]
+            );
+        }
+
+        rack::math::Vec getShapeBoundsCenter (NSVGshape* shape) {
+            auto bounds = shape->bounds;
+            return rack::math::Vec (
+                (bounds [0] + bounds [2]) / 2,
+                (bounds [1] + bounds [3]) / 2
+            );
+        }
+
     public:
         SvgHelper () : svg (nullptr, nullptr) { }
 
@@ -75,54 +91,31 @@ namespace rack_themer {
             svg.svg->forEachShape (callback);
         }
 
-        std::optional<rack::math::Vec> findNamed (std::string name) {
-            std::optional<rack::math::Vec> result;
-
-            if (svg.svg == nullptr)
-                return result;
-
+        void forEachPrefixed (const std::string& prefix, const std::function<void (unsigned int i, NSVGshape*)>& callback) {
+            unsigned int i = 0;
             forEachShape ([&] (NSVGshape* shape) {
-                if (getShapeId (shape) == name) {
-                    auto bounds = shape->bounds;
-                    result = rack::math::Vec (
-                        (bounds [0] + bounds [2]) / 2,
-                        (bounds [1] + bounds [3]) / 2
-                    );
-                    return;
-                }
+                if (getShapeId (shape).find (prefix) == 0)
+                    callback (i++, shape);
             });
-
-            return result;
         }
 
-        std::vector<rack::math::Vec> findPrefixed (std::string prefix) {
-            std::vector<rack::math::Vec> result;
-
-            if (svg.svg == nullptr)
-                return result;
-
-            forEachShape ([&] (NSVGshape* shape) {
-                if (getShapeId (shape).find (prefix) == 0) {
-                    auto bounds = shape->bounds;
-                    auto center = rack::math::Vec (
-                        (bounds [0] + bounds [2]) / 2,
-                        (bounds [1] + bounds [3]) / 2
-                    );
-                    result.push_back (center);
-                }
+        void forEachPrefixed (const std::string& prefix, const std::function<void (unsigned int i, rack::math::Rect)>& callback) {
+            forEachPrefixed (prefix, [&] (unsigned int i, NSVGshape* shape) {
+                callback (i, getShapeBoundsBox (shape));
             });
-
-            return result;
         }
 
-        std::vector<std::pair<std::vector<std::string>, rack::math::Vec>> findMatched (const std::string& pattern) {
-            std::vector<std::pair<std::vector<std::string>, rack::math::Vec>> result;
+        void forEachPrefixed (const std::string& prefix, const std::function<void (unsigned int i, rack::math::Vec)>& callback) {
+            forEachPrefixed (prefix, [&] (unsigned int i, NSVGshape* shape) {
+                callback (i, getShapeBoundsCenter (shape));
+            });
+        }
 
+        void forEachMatched (const std::string& pattern, const std::function<void (std::vector<std::string>, NSVGshape*)>& callback) {
             if (svg.svg == nullptr)
-                return result;
+                return;
 
             std::regex regex (pattern);
-
             forEachShape ([&] (NSVGshape* shape) {
                 auto id = getShapeId (shape);
                 std::vector<std::string> captures;
@@ -132,34 +125,96 @@ namespace rack_themer {
                     for (unsigned int i = 1; i < match.size (); i++)
                         captures.push_back (match [i]);
 
-                    auto bounds = shape->bounds;
-                    auto center = rack::math::Vec (
-                        (bounds [0] + bounds [2]) / 2,
-                        (bounds [1] + bounds [3]) / 2
-                    );
-                    result.emplace_back (captures, center);
+                    callback (captures, shape);
                 }
+            });
+        }
+
+        void forEachMatched (const std::string& pattern, const std::function<void (std::vector<std::string>, rack::math::Rect)>& callback) {
+            forEachMatched (pattern, [&] (std::vector<std::string> captures, NSVGshape* shape) {
+                callback (captures, getShapeBoundsBox (shape));
+            });
+        }
+
+        void forEachMatched (const std::string& pattern, const std::function<void (std::vector<std::string>, rack::math::Vec)>& callback) {
+            forEachMatched (pattern, [&] (std::vector<std::string> captures, NSVGshape* shape) {
+                callback (captures, getShapeBoundsCenter (shape));
+            });
+        }
+
+        void findNamed (const std::string& name, const std::function<void (NSVGshape* shape)>& callback) {
+            forEachShape ([&] (NSVGshape* shape) {
+                if (getShapeId (shape) == name)
+                    callback (shape);
+            });
+        }
+
+        void findNamed (const std::string& name, const std::function<void (rack::math::Vec)>& callback) {
+            findNamed (name, [&] (NSVGshape* shape) { callback (getShapeBoundsCenter (shape)); });
+        }
+
+        void findNamed (const std::string& name, const std::function<void (rack::math::Rect)>& callback) {
+            findNamed (name, [&] (NSVGshape* shape) { callback (getShapeBoundsBox (shape)); });
+        }
+
+        std::optional<rack::math::Vec> findNamed (const std::string& name) {
+            std::optional<rack::math::Vec> result;
+
+            findNamed (name, [&] (rack::math::Vec center) {
+                result = center;
             });
 
             return result;
         }
 
-        void forEachPrefixed (std::string prefix, const std::function<void (unsigned int i, rack::math::Vec)>& callback) {
-            if (svg.svg == nullptr)
-                return;
+        std::optional<rack::math::Rect> findNamedBox (const std::string& name) {
+            std::optional<rack::math::Rect> result;
 
-            auto positions = findPrefixed (prefix);
-            for (unsigned int i = 0; i < positions.size (); i++)
-                callback (i, positions [i]);
+            findNamed (name, [&] (rack::math::Rect box) {
+                result = box;
+            });
+
+            return result;
         }
 
-        void forEachMatched (const std::string& regex, const std::function<void (std::vector<std::string>, rack::math::Vec)>& callback) {
-            if (svg.svg == nullptr)
-                return;
+        std::vector<rack::math::Vec> findPrefixed (const std::string& prefix) {
+            std::vector<rack::math::Vec> result;
 
-            auto matches = findMatched (regex);
-            for (const auto& match : matches)
-                callback (match.first, match.second);
+            findPrefixed (prefix, [&] (rack::math::Vec center) {
+                result.push_back (center);
+            });
+
+            return result;
+        }
+
+        std::vector<rack::math::Rect> findPrefixedBox (const std::string& prefix) {
+            std::vector<rack::math::Rect> result;
+
+            findPrefixed (prefix, [&] (rack::math::Rect box) {
+                result.push_back (box);
+            });
+
+            return result;
+        }
+
+        auto findMatched (const std::string& pattern) {
+            std::vector<std::pair<std::vector<std::string>, rack::math::Vec>> result;
+
+            forEachMatched (pattern, [&] (std::vector<std::string> captures, rack::math::Vec center) {
+                result.emplace_back (captures, center);
+            });
+
+            return result;
+        }
+
+        auto findMatchedBox (const std::string& pattern) {
+            std::vector<std::pair<std::vector<std::string>, rack::math::Rect>> result;
+
+            forEachMatched (pattern, [&] (std::vector<std::string> captures, rack::math::Rect box) {
+                result.emplace_back (captures, box);
+            });
+
+            return result;
         }
     };
 }
