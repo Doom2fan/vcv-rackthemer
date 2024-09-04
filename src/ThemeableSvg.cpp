@@ -86,7 +86,7 @@ namespace rack_themer {
     }
 
     static NVGpaint getGradient (NVGcontext* vg, NSVGpaint* paint, const Paint& stylePaint) {
-        assert (p->type == NSVG_PAINT_LINEAR_GRADIENT || p->type == NSVG_PAINT_RADIAL_GRADIENT);
+        assert (paint->type == NSVG_PAINT_LINEAR_GRADIENT || paint->type == NSVG_PAINT_RADIAL_GRADIENT);
         assert (stylePaint.isGradient ());
 
         auto gradient = paint->gradient;
