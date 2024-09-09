@@ -94,5 +94,27 @@ namespace widgets {
 
         framebuffer->setDirty ();
     }
+
+    /*
+     * SvgScrew
+     */
+    SvgScrew::SvgScrew () {
+        frameBuffer = new rack::widget::FramebufferWidget;
+        addChild (frameBuffer);
+
+        svgWidget = new SvgWidget;
+        frameBuffer->addChild (svgWidget);
+    }
+
+    void SvgScrew::setSvg (ThemedSvg svg) {
+        if (svg == svgWidget->svg)
+            return;
+
+        svgWidget->setSvg (svg);
+        frameBuffer->box.size = svgWidget->box.size;
+        box.size = svgWidget->box.size;
+
+        frameBuffer->setDirty ();
+    }
 }
 }

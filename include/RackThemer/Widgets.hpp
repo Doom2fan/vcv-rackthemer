@@ -66,5 +66,14 @@ namespace widgets {
         void setSvg (std::shared_ptr<ThemeableSvg> svg) { setSvg (ThemedSvg (svg, svgWidget->svg.theme)); }
         void setSvg (ThemedSvg svg);
     };
+
+    struct SvgScrew : rack::widget::Widget {
+        rack::widget::FramebufferWidget* frameBuffer;
+        SvgWidget* svgWidget;
+
+        SvgScrew ();
+        void setSvg (std::shared_ptr<ThemeableSvg> svg) { setSvg (ThemedSvg (svg, svgWidget->svg.theme)); }
+        void setSvg (ThemedSvg svg);
+    };
 }
 }
