@@ -34,8 +34,9 @@ namespace widgets {
         bool autoSwitchTheme = true;
 
         SvgWidget () : svg (nullptr, nullptr) { box.size = rack::math::Vec (); }
+
         void wrap () { box.size = svg.getSize (); }
-        void setSvg (std::shared_ptr<ThemeableSvg> svg) { setSvg (ThemedSvg (svg, this->svg.theme)); }
+        void setSvg (std::shared_ptr<ThemeableSvg> svg) { setSvg (this->svg.withSvg (svg)); }
         void setSvg (ThemedSvg svg) {
             this->svg = svg;
             wrap ();
@@ -53,7 +54,7 @@ namespace widgets {
         SvgPanel ();
 
         void step () override;
-        void setBackground (std::shared_ptr<ThemeableSvg> svg) { setBackground (ThemedSvg (svg, svgWidget->svg.theme)); }
+        void setBackground (std::shared_ptr<ThemeableSvg> svg) { setBackground (svgWidget->svg.withSvg (svg)); }
         void setBackground (ThemedSvg svg);
     };
 
@@ -63,7 +64,8 @@ namespace widgets {
         SvgWidget* svgWidget;
 
         SvgPort ();
-        void setSvg (std::shared_ptr<ThemeableSvg> svg) { setSvg (ThemedSvg (svg, svgWidget->svg.theme)); }
+
+        void setSvg (std::shared_ptr<ThemeableSvg> svg) { setSvg (svgWidget->svg.withSvg (svg)); }
         void setSvg (ThemedSvg svg);
     };
 
@@ -72,7 +74,8 @@ namespace widgets {
         SvgWidget* svgWidget;
 
         SvgScrew ();
-        void setSvg (std::shared_ptr<ThemeableSvg> svg) { setSvg (ThemedSvg (svg, svgWidget->svg.theme)); }
+
+        void setSvg (std::shared_ptr<ThemeableSvg> svg) { setSvg (svgWidget->svg.withSvg (svg)); }
         void setSvg (ThemedSvg svg);
     };
 }

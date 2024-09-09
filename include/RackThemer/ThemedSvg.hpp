@@ -38,6 +38,7 @@ namespace rack_themer {
 
         bool operator== (const ThemedSvg& rhs) const { return svg == rhs.svg && theme == rhs.theme; }
         bool isValid () const { return svg != nullptr && theme != nullptr; }
+        ThemedSvg withSvg (std::shared_ptr<ThemeableSvg> svg) { return ThemedSvg (svg, theme); }
         ThemedSvg withTheme (std::shared_ptr<RackTheme> theme) { return ThemedSvg (svg, theme); }
 
         /*
