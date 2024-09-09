@@ -35,6 +35,7 @@ namespace widgets {
 
         SvgWidget () : svg (nullptr, nullptr) { box.size = rack::math::Vec (); }
         void wrap () { box.size = svg.getSize (); }
+        void setSvg (std::shared_ptr<ThemeableSvg> svg) { setSvg (ThemedSvg (svg, this->svg.theme)); }
         void setSvg (ThemedSvg svg) {
             this->svg = svg;
             wrap ();
@@ -62,6 +63,7 @@ namespace widgets {
         SvgWidget* svgWidget;
 
         SvgPort ();
+        void setSvg (std::shared_ptr<ThemeableSvg> svg) { setSvg (ThemedSvg (svg, svgWidget->svg.theme)); }
         void setSvg (ThemedSvg svg);
     };
 }
