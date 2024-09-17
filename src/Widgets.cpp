@@ -44,7 +44,7 @@ namespace widgets {
     }
 
     void SvgPanel::step () {
-        // Small details draw poorly at low DPI, so oversample when drawing to the framebuffer
+        // Small details draw poorly at low DPI, so oversample when drawing to the framebuffer.
         framebuffer->oversample = APP->window->pixelRatio < 2.0 ? 2.0 : 1.0;
 
         Widget::step ();
@@ -56,7 +56,7 @@ namespace widgets {
 
         svgWidget->setSvg (svg);
 
-        // Round framebuffer size to nearest grid
+        // Round framebuffer size to nearest grid.
         framebuffer->box.size = svgWidget->box.size.div (rack::app::RACK_GRID_SIZE).round ().mult (rack::app::RACK_GRID_SIZE);
         panelBorder->box.size = framebuffer->box.size;
         box.size = framebuffer->box.size;
@@ -88,7 +88,7 @@ namespace widgets {
         svgWidget->setSvg (svg);
         box.size = framebuffer->box.size = svgWidget->box.size;
 
-        // Move shadow downward by 10%
+        // Move shadow downward by 10%.
         shadow->box.size = svgWidget->box.size;
         shadow->box.pos = rack::math::Vec (0, svgWidget->box.size.y * .1f);
 
@@ -99,11 +99,11 @@ namespace widgets {
      * SvgScrew
      */
     SvgScrew::SvgScrew () {
-        frameBuffer = new rack::widget::FramebufferWidget;
-        addChild (frameBuffer);
+        framebuffer = new rack::widget::FramebufferWidget;
+        addChild (framebuffer);
 
         svgWidget = new SvgWidget;
-        frameBuffer->addChild (svgWidget);
+        framebuffer->addChild (svgWidget);
     }
 
     void SvgScrew::setSvg (ThemedSvg svg) {
@@ -111,10 +111,71 @@ namespace widgets {
             return;
 
         svgWidget->setSvg (svg);
-        frameBuffer->box.size = svgWidget->box.size;
+        framebuffer->box.size = svgWidget->box.size;
         box.size = svgWidget->box.size;
 
-        frameBuffer->setDirty ();
+        framebuffer->setDirty ();
+    }
+
+    /*
+     * SvgButton
+     */
+    SvgButton::SvgButton () {
+        framebuffer = new rack::widget::FramebufferWidget;
+        addChild (framebuffer);
+
+        shadow = new rack::app::CircularShadow;
+        framebuffer->addChild (shadow);
+        shadow->box.size = rack::math::Vec ();
+
+        svgWidget = new SvgWidget;
+        framebuffer->addChild (svgWidget);
+    }
+
+    void SvgButton::onButton (const ButtonEvent& e) {
+        OpaqueWidget::onButton (e);
+
+        // Dispatch ActionEvent on left click.
+        if (e.action == GLFW_PRESS && e.button == GLFW_MOUSE_BUTTON_LEFT) {
+            ActionEvent eAction;
+            onAction (eAction);
+        }
+    }
+
+    void SvgButton::addFrame (std::shared_ptr<ThemeableSvg> svg) {
+        frames.push_back (svg);
+
+        // If this is our first frame, automatically set SVG and size.
+        if (svgWidget->svg.svg == nullptr) {
+            svgWidget->setSvg (svg);
+            box.size = svgWidget->box.size;
+            framebuffer->box.size = svgWidget->box.size;
+            // Move shadow downward by 10%.
+            shadow->box.size = svgWidget->box.size;
+            shadow->box.pos = rack::math::Vec (0, svgWidget->box.size.y * .10f);
+            framebuffer->setDirty ();
+        }
+    }
+
+    void SvgButton::onDragStart (const DragStartEvent& e) {
+        if (e.button != GLFW_MOUSE_BUTTON_LEFT)
+            return;
+
+        if (frames.size () >= 2) {
+            svgWidget->setSvg (frames [1]);
+            framebuffer->setDirty ();
+        }
+    }
+
+    void SvgButton::onDragEnd (const DragEndEvent& e) {
+        if (frames.size () >= 1) {
+            svgWidget->setSvg (frames [0]);
+            framebuffer->setDirty ();
+        }
+    }
+
+    void SvgButton::onDragDrop (const DragDropEvent& e) {
+        // Don't dispatch ActionEvent on DragDrop because it's already called on mouse down.
     }
 }
 }

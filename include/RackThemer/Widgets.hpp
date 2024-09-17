@@ -70,13 +70,28 @@ namespace widgets {
     };
 
     struct SvgScrew : rack::widget::Widget {
-        rack::widget::FramebufferWidget* frameBuffer;
+        rack::widget::FramebufferWidget* framebuffer;
         SvgWidget* svgWidget;
 
         SvgScrew ();
 
         void setSvg (std::shared_ptr<ThemeableSvg> svg) { setSvg (svgWidget->svg.withSvg (svg)); }
         void setSvg (ThemedSvg svg);
+    };
+
+    struct SvgButton : rack::widget::OpaqueWidget {
+        rack::widget::FramebufferWidget* framebuffer;
+        rack::app::CircularShadow* shadow;
+        SvgWidget* svgWidget;
+        std::vector<std::shared_ptr<ThemeableSvg>> frames;
+
+        SvgButton ();
+
+        void addFrame (std::shared_ptr<ThemeableSvg> svg);
+        void onButton (const ButtonEvent& e) override;
+        void onDragStart (const DragStartEvent& e) override;
+        void onDragEnd (const DragEndEvent& e) override;
+        void onDragDrop (const DragDropEvent& e) override;
     };
 }
 }
