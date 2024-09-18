@@ -224,7 +224,6 @@ namespace widgets {
         }
     }
 
-
     void SvgSwitch::onDragEnd (const DragEndEvent& e) {
         Switch::onDragEnd (e);
 
@@ -239,7 +238,6 @@ namespace widgets {
             }
         }
     }
-
 
     void SvgSwitch::onChange (const ChangeEvent& e) {
         if (!latch) {
@@ -313,6 +311,69 @@ namespace widgets {
         framebuffer->setDirty ();
 
         Knob::onChange (e);
+    }
+
+    /*
+     * SvgPanel
+     */
+    SvgSlider::SvgSlider () {
+        framebuffer = new rack::widget::FramebufferWidget;
+        addChild (framebuffer);
+
+        background = new SvgWidget;
+        framebuffer->addChild (background);
+
+        handle = new SvgWidget;
+        framebuffer->addChild (handle);
+
+        speed = 2.f;
+    }
+
+    void SvgSlider::setBackgroundSvg (ThemedSvg svg) {
+        if (svg == background->svg)
+            return;
+
+        background->setSvg (svg);
+        box.size = background->box.size;
+        framebuffer->box.size = background->box.size;
+        framebuffer->setDirty ();
+    }
+
+    void SvgSlider::setHandleSvg (ThemedSvg svg) {
+        if (svg == handle->svg)
+            return;
+
+        handle->setSvg (svg);
+        handle->box.pos = maxHandlePos;
+        framebuffer->setDirty ();
+    }
+
+    void SvgSlider::setHandlePos (rack::math::Vec minHandlePos, rack::math::Vec maxHandlePos) {
+        this->minHandlePos = minHandlePos;
+        this->maxHandlePos = maxHandlePos;
+
+        // Set handle pos to maximum by default.
+        handle->box.pos = maxHandlePos;
+    }
+
+    void SvgSlider::setHandlePosCentered (rack::math::Vec minHandlePosCentered, rack::math::Vec maxHandlePosCentered) {
+        setHandlePos (
+            minHandlePosCentered.minus (handle->box.size.div (2)),
+            maxHandlePosCentered.minus (handle->box.size.div (2))
+        );
+    }
+
+    void SvgSlider::onChange (const ChangeEvent& e) {
+        // Default position is max value.
+        auto v = 1.f;
+        if (auto pq = getParamQuantity ())
+            v = pq->getScaledValue ();
+
+        // Interpolate handle position.
+        handle->box.pos = minHandlePos.crossfade (maxHandlePos, v);
+        framebuffer->setDirty ();
+
+        ParamWidget::onChange (e);
     }
 }
 }

@@ -105,7 +105,7 @@ namespace widgets {
 
         SvgSwitch ();
         ~SvgSwitch ();
-        /** Adds an SVG file to represent the next switch position */
+        /** Adds an SVG file to represent the next switch position. */
         void addFrame (std::shared_ptr<ThemeableSvg> svg);
 
         void onDragStart (const DragStartEvent& e) override;
@@ -122,6 +122,27 @@ namespace widgets {
         SvgKnob ();
         void setSvg (std::shared_ptr<ThemeableSvg> svg) { setSvg (svgWidget->svg.withSvg (svg)); }
         void setSvg (ThemedSvg svg);
+        void onChange (const ChangeEvent& e) override;
+    };
+
+    /**
+     * Behaves like a knob but linearly moves an SvgWidget between two points.
+     * Can be used for horizontal or vertical linear faders.
+     */
+    struct SvgSlider : rack::app::SliderKnob {
+        rack::widget::FramebufferWidget* framebuffer;
+        SvgWidget* background;
+        SvgWidget* handle;
+        /** Intermediate positions will be interpolated between these positions. **/
+        rack::math::Vec minHandlePos, maxHandlePos;
+
+        SvgSlider ();
+        void setBackgroundSvg (std::shared_ptr<ThemeableSvg> svg) { setBackgroundSvg (background->svg.withSvg (svg)); }
+        void setBackgroundSvg (ThemedSvg svg);
+        void setHandleSvg (std::shared_ptr<ThemeableSvg> svg) { setHandleSvg (handle->svg.withSvg (svg)); }
+        void setHandleSvg (ThemedSvg svg);
+        void setHandlePos (rack::math::Vec minHandlePos, rack::math::Vec maxHandlePos);
+        void setHandlePosCentered (rack::math::Vec minHandlePosCentered, rack::math::Vec maxHandlePosCentered);
         void onChange (const ChangeEvent& e) override;
     };
 }
