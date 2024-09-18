@@ -155,12 +155,12 @@ namespace widgets {
             framebuffer = new rack::widget::FramebufferWidget;
             this->addChild (framebuffer);
 
-            svgWidget = new widget::SvgWidget;
+            svgWidget = new SvgWidget;
             framebuffer->addChild (svgWidget);
         }
 
         void setSvg (std::shared_ptr<ThemeableSvg> svg) { setSvg (svgWidget->svg.withSvg (svg)); }
-        void setSvg (ThemedWidget svg) {
+        void setSvg (ThemedSvg svg) {
             svgWidget->setSvg (svg);
             framebuffer->box.size = svgWidget->box.size;
             this->box.size = svgWidget->box.size;
