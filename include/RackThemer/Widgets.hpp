@@ -93,5 +93,24 @@ namespace widgets {
         void onDragEnd (const DragEndEvent& e) override;
         void onDragDrop (const DragDropEvent& e) override;
     };
+
+    struct SvgSwitch : rack::app::Switch {
+        rack::widget::FramebufferWidget* framebuffer;
+        rack::app::CircularShadow* shadow;
+        SvgWidget* svgWidget;
+        std::vector<std::shared_ptr<ThemeableSvg>> frames;
+
+        /** Use frames 0 and 1 when the mouse is pressed and released, instead of using the param value as the frame index. */
+        bool latch = false;
+
+        SvgSwitch ();
+        ~SvgSwitch ();
+        /** Adds an SVG file to represent the next switch position */
+        void addFrame (std::shared_ptr<ThemeableSvg> svg);
+
+        void onDragStart (const DragStartEvent& e) override;
+        void onDragEnd (const DragEndEvent& e) override;
+        void onChange (const ChangeEvent& e) override;
+    };
 }
 }
