@@ -244,7 +244,7 @@ namespace widgets {
     void SvgSwitch::onChange (const ChangeEvent& e) {
         if (!latch) {
             auto pq = getParamQuantity ();
-            if (!frames.empty () && pq) {
+            if (!frames.empty () && pq != nullptr) {
                 auto index = (int) std::round (pq->getValue () - pq->getMinValue ());
                 index = rack::math::clamp (index, 0, (int) frames.size () - 1);
                 svgWidget->setSvg (frames [index]);
@@ -252,6 +252,67 @@ namespace widgets {
             }
         }
         ParamWidget::onChange (e);
+    }
+
+    /*
+     * SvgKnob
+     */
+    SvgKnob::SvgKnob () {
+        framebuffer = new rack::widget::FramebufferWidget;
+        addChild (framebuffer);
+
+        shadow = new rack::app::CircularShadow;
+        framebuffer->addChild (shadow);
+        shadow->box.size = rack::math::Vec ();
+
+        transformWidget = new rack::widget::TransformWidget;
+        framebuffer->addChild (transformWidget);
+
+        svgWidget = new SvgWidget;
+        transformWidget->addChild (svgWidget);
+    }
+
+    void SvgKnob::setSvg (ThemedSvg svg) {
+        if (svg == svgWidget->svg)
+            return;
+
+        svgWidget->setSvg (svg);
+        transformWidget->box.size = svgWidget->box.size;
+        framebuffer->box.size = svgWidget->box.size;
+        box.size = svgWidget->box.size;
+
+        shadow->box.size = svgWidget->box.size;
+        // Move shadow downward by 10%.
+        shadow->box.pos = rack::math::Vec (0, svgWidget->box.size.y * .10f);
+
+        framebuffer->setDirty ();
+    }
+
+    void SvgKnob::onChange (const ChangeEvent& e) {
+        auto angle = 0.f;
+
+        // Calculate angle from value
+        if (auto pq = getParamQuantity ()) {
+            auto value = pq->getValue ();
+            if (!pq->isBounded ()) // Number of rotations equals value for unbounded range.
+                angle = value * (2 * M_PI);
+            else if (pq->getRange () == 0.f) // Center angle for zero range.
+                angle = (minAngle + maxAngle) / 2.f;
+            else // Proportional angle for finite range.
+                angle = rack::math::rescale (value, pq->getMinValue (), pq->getMaxValue (), minAngle, maxAngle);
+
+            angle = std::fmod (angle, 2 * M_PI);
+        }
+
+        transformWidget->identity ();
+        // Rotate SVG.
+        auto center = svgWidget->box.getCenter ();
+        transformWidget->translate (center);
+        transformWidget->rotate (angle);
+        transformWidget->translate (center.neg ());
+        framebuffer->setDirty ();
+
+        Knob::onChange (e);
     }
 }
 }

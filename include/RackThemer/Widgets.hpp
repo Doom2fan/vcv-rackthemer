@@ -112,5 +112,17 @@ namespace widgets {
         void onDragEnd (const DragEndEvent& e) override;
         void onChange (const ChangeEvent& e) override;
     };
+
+    struct SvgKnob : rack::app::Knob {
+        rack::widget::FramebufferWidget* framebuffer;
+        rack::app::CircularShadow* shadow;
+        rack::widget::TransformWidget* transformWidget;
+        SvgWidget* svgWidget;
+
+        SvgKnob ();
+        void setSvg (std::shared_ptr<ThemeableSvg> svg) { setSvg (svgWidget->svg.withSvg (svg)); }
+        void setSvg (ThemedSvg svg);
+        void onChange (const ChangeEvent& e) override;
+    };
 }
 }
