@@ -145,5 +145,27 @@ namespace widgets {
         void setHandlePosCentered (rack::math::Vec minHandlePosCentered, rack::math::Vec maxHandlePosCentered);
         void onChange (const ChangeEvent& e) override;
     };
+
+    template<typename TBase = rack::app::ModuleLightWidget>
+    struct TSvgLight : TBase {
+        rack::widget::FramebufferWidget* framebuffer;
+        SvgWidget* svgWidget;
+
+        TSvgLight () {
+            framebuffer = new rack::widget::FramebufferWidget;
+            this->addChild (framebuffer);
+
+            svgWidget = new widget::SvgWidget;
+            framebuffer->addChild (svgWidget);
+        }
+
+        void setSvg (std::shared_ptr<ThemeableSvg> svg) { setSvg (svgWidget->svg.withSvg (svg)); }
+        void setSvg (ThemedWidget svg) {
+            svgWidget->setSvg (svg);
+            framebuffer->box.size = svgWidget->box.size;
+            this->box.size = svgWidget->box.size;
+        }
+    };
+    using SvgLight = TSvgLight<>;
 }
 }
