@@ -20,6 +20,8 @@
 #include "ThemeLoader.hpp"
 #include "rack_themer.hpp"
 
+#include <fmt/format.h>
+
 namespace rack_themer {
     ThemeLoader themeLoader;
 
@@ -124,20 +126,11 @@ namespace logging {
         return result;
     }
 
-    std::string formatString (const char* fmt, ...) {
-        const int len = 256;
-        std::string s (len, '\0');
-        va_list args;
-        va_start (args, fmt);
-        auto r = std::vsnprintf (&(*s.begin ()), len + 1, fmt, args);
-        return r < 0 ? "??" : s;
-    }
-
     bool ThemeLoader::requireValidHexColor (std::string hex, const char* name) {
         if (isValidHexColor (hex))
             return true;
 
-        logError (logging::ErrorCode::InvalidHexColor, formatString ("'%s': invalid hex color: '%s'", name, hex.c_str ()));
+        logError (logging::ErrorCode::InvalidHexColor, fmt::format (FMT_STRING ("'{}': invalid hex color: '{}'"), name, hex));
         return false;
     }
 
@@ -145,7 +138,7 @@ namespace logging {
         if (json_is_array (j))
             return true;
 
-        logError (logging::ErrorCode::ArrayExpected, formatString ("'%s': array expected", name));
+        logError (logging::ErrorCode::ArrayExpected, fmt::format (FMT_STRING ("'{}': array expected"), name));
         return false;
     }
 
@@ -153,7 +146,7 @@ namespace logging {
         if (json_is_object (j))
             return true;
 
-        logError (logging::ErrorCode::ObjectExpected, formatString ("'%s': object expected", name));
+        logError (logging::ErrorCode::ObjectExpected, fmt::format (FMT_STRING ("'{}': object expected"), name));
         return false;
     }
 
@@ -161,7 +154,7 @@ namespace logging {
         if (json_is_object (j) || json_is_string (j))
             return true;
 
-        logError (logging::ErrorCode::ObjectOrStringExpected, formatString ("'%s': Object or string expected", name));
+        logError (logging::ErrorCode::ObjectOrStringExpected, fmt::format (FMT_STRING ("'{}': Object or string expected"), name));
         return false;
     }
 
@@ -169,7 +162,7 @@ namespace logging {
         if (json_is_string (j))
             return true;
 
-        logError (logging::ErrorCode::StringExpected, formatString ("'%s': String expected", name));
+        logError (logging::ErrorCode::StringExpected, fmt::format (FMT_STRING ("'{}': String expected"), name));
         return false;
     }
 
@@ -177,7 +170,7 @@ namespace logging {
         if (json_is_number (j))
             return true;
 
-        logError (logging::ErrorCode::NumberExpected, formatString ("'%s': Number expected", name));
+        logError (logging::ErrorCode::NumberExpected, fmt::format (FMT_STRING ("'{}': Number expected"), name));
         return false;
     }
 
@@ -185,7 +178,7 @@ namespace logging {
         if (json_is_integer (j))
             return true;
 
-        logError (logging::ErrorCode::IntegerExpected, formatString ("'%s': Integer expected", name));
+        logError (logging::ErrorCode::IntegerExpected, fmt::format (FMT_STRING ("'{}': Integer expected"), name));
         return false;
     }
 
@@ -431,7 +424,7 @@ namespace logging {
             else if (strcmp (valueStr, "miter") == 0)
                 value = NVG_MITER;
             else {
-                logError (logging::ErrorCode::InvalidLineCap, formatString ("'line_cap': Unrecognized line cap type '%s'"));
+                logError (logging::ErrorCode::InvalidLineCap, fmt::format (FMT_STRING ("'line_cap': Unrecognized line cap type '{}'"), valueStr));
                 return false;
             }
 
@@ -445,7 +438,7 @@ namespace logging {
         if (strlen (name) < 1)
             return false;
 
-        logInfo (formatString ("Parsing '%s'", name));
+        logInfo (fmt::format (FMT_STRING ("Parsing '{}'"), name));
         auto style = std::make_shared<Style> ();
 
         if (!parseFill (root, style) ||
@@ -485,7 +478,7 @@ namespace logging {
             return false;
         }
 
-        logInfo (formatString ("Parsing theme '%s'", name));
+        logInfo (fmt::format (FMT_STRING ("Parsing theme '{}'"), name));
 
         theme = std::make_shared<RackTheme> ();
         theme->name = name;
@@ -495,7 +488,7 @@ namespace logging {
         json_t* jStyle = nullptr;
         json_object_foreach_safe (jStyles, n, key, jStyle) {
             if (!json_is_object (jStyle)) {
-                logError (logging::ErrorCode::ObjectExpected, formatString ("Theme '%s': Each style must be an object", theme->name.c_str ()));
+                logError (logging::ErrorCode::ObjectExpected, fmt::format (FMT_STRING ("Theme '{}': Each style must be an object"), theme->name));
                 return false;
             }
 
@@ -516,7 +509,7 @@ namespace logging {
         json_error_t error;
         auto root = json_loadf (file, 0, &error);
         if (root == nullptr) {
-            logError (logging::ErrorCode::JsonParseFailed, formatString ("Parse error - %s %d:%d %s",
+            logError (logging::ErrorCode::JsonParseFailed, fmt::format (FMT_STRING ("Parse error - {} {}:{} {}"),
                 error.source,
                 error.line,
                 error.column,
