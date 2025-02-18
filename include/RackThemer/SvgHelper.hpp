@@ -167,6 +167,10 @@ namespace rack_themer {
             return result;
         }
 
+        rack::math::Vec findNamed (const std::string& name, const rack::math::Vec defaultValue) {
+            return findNamed (name).value_or (defaultValue);
+        }
+
         std::optional<rack::math::Rect> findNamedBox (const std::string& name) {
             std::optional<rack::math::Rect> result;
 
