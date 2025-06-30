@@ -21,7 +21,7 @@
 #include "ThemeLoader.hpp"
 
 namespace rack_themer {
-    ThemeCache themeCache;
+    ThemeCache themeCache = ThemeCache ();
 
     std::shared_ptr<RackTheme> ThemeCache::createRackTheme (std::string path) {
         if (path.empty ()) {

@@ -23,7 +23,7 @@
 #include <fmt/format.h>
 
 namespace rack_themer {
-    ThemeLoader themeLoader;
+    ThemeLoader themeLoader = ThemeLoader ();
 
 namespace logging {
     void setLogger (logging::LogCallback logger) { themeLoader.setLogger (logger); }
