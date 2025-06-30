@@ -23,7 +23,10 @@
 namespace rack_themer {
     std::shared_ptr<ThemeableSvg> loadSvg (const std::string& path) { return themeCache.getSvg (path); }
     std::string getShapeId (const NSVGshape* shape) {
-        return getKeyedStringText (themeCache.getShapeInfo (shape).shapeId);
+        if (shape != nullptr)
+            return getKeyedStringText (themeCache.getShapeInfo (shape).shapeId);
+        else
+            return "";
     }
 
     rack::math::Vec ThemeableSvg::getSize () {
@@ -71,6 +74,9 @@ namespace rack_themer {
     }
 
     void ThemeableSvg::forEachShape (const std::function<void (NSVGshape*)>& callback) {
+        if (handle == nullptr)
+            return;
+
         auto shapes = handle->shapes;
         for (NSVGshape* shape = shapes; shape != nullptr; shape = shape->next)
             callback (shape);
@@ -150,6 +156,9 @@ namespace rack_themer {
     }
 
     void getStyle (Style& style, const std::shared_ptr<RackTheme>& themePtr, const NSVGshape* shape) {
+        if (themePtr == nullptr)
+            return;
+
         auto shapeInfo = themeCache.getShapeInfo (shape);
         auto classStyle = themePtr->getClassStyle (shapeInfo.styleClass);
         auto idStyle = themePtr->getIdStyle (shapeInfo.shapeId);
@@ -174,6 +183,9 @@ namespace rack_themer {
     }
 
     void ThemeableSvg::draw (NVGcontext* vg, std::shared_ptr<RackTheme> themePtr) {
+        if (handle == nullptr)
+            return;
+
         int shapeIndex = 0;
         Style shapeStyle;
 
