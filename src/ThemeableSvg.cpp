@@ -231,6 +231,7 @@ namespace rack_themer {
             // Iterate path linked list
             for (auto path = shape->paths; path; path = path->next) {
                 assert (path != nullptr);
+                WARN ("=== ThemeableSvg::draw path %p %p", path, path->pts);
                 if (path->pts == nullptr)
                     continue;
 
