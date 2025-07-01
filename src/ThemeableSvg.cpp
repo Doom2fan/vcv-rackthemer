@@ -192,6 +192,10 @@ namespace rack_themer {
 
         // Iterate shape linked list
         for (auto shape = handle->shapes; shape; shape = shape->next, shapeIndex++) {
+            // Skip shapes with no paths
+            if (shape->paths == nullptr)
+                continue;
+
             // Visibility
             if (!(shape->flags & NSVG_FLAGS_VISIBLE))
                 continue;
@@ -209,6 +213,10 @@ namespace rack_themer {
 
             // Iterate path linked list
             for (auto path = shape->paths; path; path = path->next) {
+                // Skip if pts is somehow null
+                if (paths->pts == nullptr)
+                    continue;
+
                 nvgMoveTo (vg, path->pts [0], path->pts [1]);
                 for (auto i = 1; i < path->npts; i += 3) {
                     auto p = &path->pts [2 * i];
