@@ -207,7 +207,7 @@ namespace rack_themer {
         WARN ("=== ThemeableSvg::draw C");
 
         // Iterate shape linked list
-        for (auto shape = handle->shapes; shape; shape = shape->next, shapeIndex++) {
+        for (auto shape = handle->shapes; shape != nullptr; shape = shape->next, shapeIndex++) {
             WARN ("=== ThemeableSvg::draw shape A");
             // Visibility
             if (!(shape->flags & NSVG_FLAGS_VISIBLE))
@@ -230,6 +230,10 @@ namespace rack_themer {
 
             // Iterate path linked list
             for (auto path = shape->paths; path; path = path->next) {
+                assert (path != nullptr);
+                if (path->pts == nullptr)
+                    continue;
+
                 WARN ("=== ThemeableSvg::draw path A");
                 nvgMoveTo (vg, path->pts [0], path->pts [1]);
                 for (auto i = 1; i < path->npts; i += 3) {
