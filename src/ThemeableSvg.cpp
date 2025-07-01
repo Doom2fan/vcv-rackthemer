@@ -184,14 +184,17 @@ namespace rack_themer {
     }
 
     void ThemeableSvg::draw (NVGcontext* vg, std::shared_ptr<RackTheme> themePtr) {
+        WARN ("=== ThemeableSvg::draw A");
         if (vg == nullptr || handle == nullptr)
             return;
-
+        WARN ("=== ThemeableSvg::draw B");
         int shapeIndex = 0;
         Style shapeStyle;
+        WARN ("=== ThemeableSvg::draw C");
 
         // Iterate shape linked list
         for (auto shape = handle->shapes; shape; shape = shape->next, shapeIndex++) {
+            WARN ("=== ThemeableSvg::draw D");
             // Visibility
             if (!(shape->flags & NSVG_FLAGS_VISIBLE))
                 continue;
@@ -232,6 +235,7 @@ namespace rack_themer {
 
                 // Iterate all other paths
                 for (auto path2 = shape->paths; path2; path2 = path2->next) {
+                    WARN ("=== ThemeableSvg::draw E");
                     if (path2 == path)
                         continue;
 

@@ -50,10 +50,13 @@ namespace rack_themer {
         int getNumPoints () { return svg != nullptr ? svg->getNumPoints () : 0; }
 
         void draw (NVGcontext* vg) {
+            WARN ("=== ThemedSvg::draw A");
             if (svg == nullptr || theme == nullptr)
                 return;
 
+            WARN ("=== ThemedSvg::draw B");
             svg->draw (vg, theme);
+            WARN ("=== ThemedSvg::draw C");
         }
     };
 }
