@@ -39,6 +39,8 @@ namespace rack_themer {
         NSVGimage* handle = nullptr;
 
       public:
+        std::string path = "";
+
         rack::math::Vec getSize ();
         int getNumShapes ();
         int getNumPaths ();

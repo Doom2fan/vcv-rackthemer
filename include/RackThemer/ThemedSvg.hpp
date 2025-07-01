@@ -54,6 +54,7 @@ namespace rack_themer {
             if (svg == nullptr || theme == nullptr)
                 return;
 
+            WARN ("=== ThemeableSvg::draw Path=%s", svg->path.c_str ());
             WARN ("=== ThemedSvg::draw B");
             svg->draw (vg, theme);
             WARN ("=== ThemedSvg::draw C");

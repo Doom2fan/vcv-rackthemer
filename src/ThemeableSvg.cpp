@@ -92,6 +92,7 @@ namespace rack_themer {
     }
 
     static NVGpaint getGradient (NVGcontext* vg, NSVGpaint* paint, const Paint& stylePaint) {
+        WARN ("=== ThemeableSvg::getGradient A");
         assert (paint != nullptr);
         assert (paint->type == NSVG_PAINT_LINEAR_GRADIENT || paint->type == NSVG_PAINT_RADIAL_GRADIENT);
         assert (stylePaint.isGradient ());
@@ -99,9 +100,11 @@ namespace rack_themer {
         auto gradient = paint->gradient;
         auto styleGradient = stylePaint.getGradient ();
         assert (styleGradient->nstops >= 1);
+        WARN ("=== ThemeableSvg::getGradient B");
 
         float inverse [6];
         nvgTransformInverse (inverse, gradient->xform);
+        WARN ("=== ThemeableSvg::getGradient C");
 
         auto innerCol = styleGradient->stops [0].color;
         auto outerCol = styleGradient->stops [styleGradient->nstops - 1].color;
@@ -110,6 +113,7 @@ namespace rack_themer {
         rack::math::Vec s, e;
         nvgTransformPoint (&s.x, &s.y, inverse, 0, 0);
         nvgTransformPoint (&e.x, &e.y, inverse, 0, 1);
+        WARN ("=== ThemeableSvg::getGradient D");
 
         return paint->type == NSVG_PAINT_LINEAR_GRADIENT
                ? nvgLinearGradient (vg, s.x, s.y, e.x, e.y, innerCol, outerCol)
@@ -131,6 +135,7 @@ namespace rack_themer {
     }
 
     Paint getShapePaint (const NSVGpaint paint) {
+        WARN ("=== ThemeableSvg::getShapePaint");
         switch (paint.type) {
             case NSVG_PAINT_NONE:
                 return Paint::makeNone ();
@@ -157,33 +162,42 @@ namespace rack_themer {
     }
 
     void getStyle (Style& style, const std::shared_ptr<RackTheme>& themePtr, const NSVGshape* shape) {
+        WARN ("=== ThemeableSvg::getStyle A");
         if (themePtr == nullptr)
             return;
 
+        WARN ("=== ThemeableSvg::getStyle B");
         auto shapeInfo = themeCache.getShapeInfo (shape);
         auto classStyle = themePtr->getClassStyle (shapeInfo.styleClass);
         auto idStyle = themePtr->getIdStyle (shapeInfo.shapeId);
 
         // Shape style
+        WARN ("=== ThemeableSvg::getStyle C");
         style = Style ();
 
         // Fill
+        WARN ("=== ThemeableSvg::getStyle D");
         style.setFill (getShapePaint (shape->fill));
 
         // Stroke
+        WARN ("=== ThemeableSvg::getStyle E");
         style.setStroke (getShapePaint (shape->stroke));
         style.setStrokeWidth (shape->strokeWidth);
         style.setStrokeLineCap (static_cast<NVGlineCap> (shape->strokeLineCap));
         style.setStrokeLineJoin (static_cast<int> (shape->strokeLineJoin));
 
         // Combine theme styles
+        WARN ("=== ThemeableSvg::getStyle F");
         if (classStyle != nullptr)
             style = style.combineStyle (classStyle);
+        WARN ("=== ThemeableSvg::getStyle G");
         if (idStyle != nullptr)
             style = style.combineStyle (idStyle);
+        WARN ("=== ThemeableSvg::getStyle H");
     }
 
     void ThemeableSvg::draw (NVGcontext* vg, std::shared_ptr<RackTheme> themePtr) {
+        WARN ("=== ThemeableSvg::draw Path=%s", path.c_str ());
         WARN ("=== ThemeableSvg::draw A");
         if (vg == nullptr || handle == nullptr)
             return;
@@ -194,24 +208,29 @@ namespace rack_themer {
 
         // Iterate shape linked list
         for (auto shape = handle->shapes; shape; shape = shape->next, shapeIndex++) {
-            WARN ("=== ThemeableSvg::draw D");
+            WARN ("=== ThemeableSvg::draw shape A");
             // Visibility
             if (!(shape->flags & NSVG_FLAGS_VISIBLE))
                 continue;
 
+            WARN ("=== ThemeableSvg::draw shape B");
             nvgSave (vg);
             getStyle (shapeStyle, themePtr, shape);
+            WARN ("=== ThemeableSvg::draw shape C");
 
             // Opacity
             auto opacity = shape->opacity * shapeStyle.getOpacity ();
             if (opacity < 1.0)
                 nvgAlpha (vg, opacity);
+            WARN ("=== ThemeableSvg::draw shape D");
 
             // Build path
             nvgBeginPath (vg);
+            WARN ("=== ThemeableSvg::draw shape E");
 
             // Iterate path linked list
             for (auto path = shape->paths; path; path = path->next) {
+                WARN ("=== ThemeableSvg::draw path A");
                 nvgMoveTo (vg, path->pts [0], path->pts [1]);
                 for (auto i = 1; i < path->npts; i += 3) {
                     auto p = &path->pts [2 * i];
@@ -219,6 +238,7 @@ namespace rack_themer {
                 }
 
                 // Close path
+                WARN ("=== ThemeableSvg::draw path B");
                 if (path->closed)
                     nvgClosePath (vg);
 
@@ -233,16 +253,17 @@ namespace rack_themer {
                 auto p0 = rack::math::Vec (path->pts [0], path->pts [1]);
                 auto p1 = rack::math::Vec (path->bounds [0] - 1.0, path->bounds [1] - 1.0);
 
+                WARN ("=== ThemeableSvg::draw path C");
                 // Iterate all other paths
                 for (auto path2 = shape->paths; path2; path2 = path2->next) {
-                    WARN ("=== ThemeableSvg::draw E");
+                    WARN ("=== ThemeableSvg::draw path2 A");
                     if (path2 == path)
                         continue;
 
                     // Iterate all lines on the path
                     if (path2->npts < 4)
                         continue;
-
+                    WARN ("=== ThemeableSvg::draw path 2 B");
                     for (auto i = 1; i < path2->npts + 3; i += 3) {
                         auto p = &path2->pts [2 * i];
 
@@ -259,38 +280,49 @@ namespace rack_themer {
                         if (0. <= crossing && crossing < 1. && 0. <= crossing2)
                             crossings++;
                     }
+                    WARN ("=== ThemeableSvg::draw path2 C");
                 }
 
+                WARN ("=== ThemeableSvg::draw path D");
                 nvgPathWinding (vg, (crossings % 2 == 0) ? NVG_SOLID : NVG_HOLE);
+                WARN ("=== ThemeableSvg::draw path E");
             }
 
             // Fill shape
+            WARN ("=== ThemeableSvg::draw shape F");
             auto fillPaint = shapeStyle.getFill ();
             if (!fillPaint.isNone ()) {
                 auto hasGradient =
                     shape->fill.type == NSVG_PAINT_LINEAR_GRADIENT ||
                     shape->fill.type == NSVG_PAINT_RADIAL_GRADIENT;
+                WARN ("=== ThemeableSvg::draw shape F1");
                 if (fillPaint.isGradient () && !hasGradient)
                     nvgFillColor (vg, getNVGColor (shape->fill.color));
                 else if (fillPaint.isColor ())
                     nvgFillColor (vg, fillPaint.getColor ());
                 else if (fillPaint.isGradient () && shape->fill.gradient != nullptr)
                     nvgFillPaint (vg, getGradient (vg, &shape->fill, fillPaint));
+                WARN ("=== ThemeableSvg::draw shape F2");
 
                 nvgFill (vg);
+                WARN ("=== ThemeableSvg::draw shape F3");
             }
 
             // Stroke shape
+            WARN ("=== ThemeableSvg::draw shape G");
             auto strokePaint = shapeStyle.getStroke ();
             if (!strokePaint.isNone ()) {
+            WARN ("=== ThemeableSvg::draw shape G1");
                 nvgStrokeWidth (vg, shapeStyle.getStrokeWidth ());
                 // strokeDashOffset, strokeDashArray, strokeDashCount not yet supported
                 nvgLineCap (vg, shapeStyle.getStrokeLineCap ());
                 nvgLineJoin (vg, shapeStyle.getStrokeLineJoin ());
+                WARN ("=== ThemeableSvg::draw shape G2");
 
                 auto hasGradient =
                     shape->stroke.type == NSVG_PAINT_LINEAR_GRADIENT ||
                     shape->stroke.type == NSVG_PAINT_RADIAL_GRADIENT;
+                WARN ("=== ThemeableSvg::draw shape G3");
                 if (strokePaint.isGradient () && !hasGradient)
                     nvgStrokeColor (vg, getNVGColor (shape->stroke.color));
                 else if (strokePaint.isColor ())
@@ -298,10 +330,14 @@ namespace rack_themer {
                 else if (strokePaint.isGradient () && shape->stroke.gradient != nullptr)
                     nvgStrokePaint (vg, getGradient (vg, &shape->stroke, strokePaint));
 
+                WARN ("=== ThemeableSvg::draw shape G4");
                 nvgStroke (vg);
+                WARN ("=== ThemeableSvg::draw shape G5");
             }
 
+            WARN ("=== ThemeableSvg::draw shape H");
             nvgRestore (vg);
+            WARN ("=== ThemeableSvg::draw shape I");
         }
     }
 }

@@ -50,6 +50,7 @@ namespace rack_themer {
 
         auto svg = std::make_shared<ThemeableSvg> ();
         svg->handle = handle;
+        svg->path = path;
         svgCache [path] = svg;
 
         return svg;
