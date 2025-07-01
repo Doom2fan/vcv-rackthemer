@@ -92,6 +92,7 @@ namespace rack_themer {
     }
 
     static NVGpaint getGradient (NVGcontext* vg, NSVGpaint* paint, const Paint& stylePaint) {
+        assert (paint != nullptr);
         assert (paint->type == NSVG_PAINT_LINEAR_GRADIENT || paint->type == NSVG_PAINT_RADIAL_GRADIENT);
         assert (stylePaint.isGradient ());
 
@@ -183,7 +184,7 @@ namespace rack_themer {
     }
 
     void ThemeableSvg::draw (NVGcontext* vg, std::shared_ptr<RackTheme> themePtr) {
-        if (handle == nullptr)
+        if (vg == nullptr || handle == nullptr)
             return;
 
         int shapeIndex = 0;
