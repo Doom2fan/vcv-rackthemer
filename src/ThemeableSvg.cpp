@@ -208,6 +208,10 @@ namespace rack_themer {
 
         // Iterate shape linked list
         for (auto shape = handle->shapes; shape != nullptr; shape = shape->next, shapeIndex++) {
+            // Skip shapes with no paths
+            if (shape->paths == nullptr)
+                continue;
+
             WARN ("=== ThemeableSvg::draw shape A");
             // Visibility
             if (!(shape->flags & NSVG_FLAGS_VISIBLE))
