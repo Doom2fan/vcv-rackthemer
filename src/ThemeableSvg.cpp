@@ -214,7 +214,7 @@ namespace rack_themer {
             // Iterate path linked list
             for (auto path = shape->paths; path; path = path->next) {
                 // Skip if pts is somehow null
-                if (paths->pts == nullptr)
+                if (path->pts == nullptr)
                     continue;
 
                 nvgMoveTo (vg, path->pts [0], path->pts [1]);
