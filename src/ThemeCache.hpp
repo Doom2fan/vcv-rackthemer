@@ -43,8 +43,8 @@ namespace rack_themer {
         std::unordered_map<KeyedString, std::string> keyStringMap = {};
         int nextStringKeyValue = 1;
 
-        std::shared_ptr<RackTheme> createRackTheme (std::string path);
-        std::shared_ptr<ThemeableSvg> createThemeableSvg (std::string path);
+        std::shared_ptr<RackTheme> createRackTheme (const std::string& path);
+        std::shared_ptr<ThemeableSvg> createThemeableSvg (const std::string& path);
 
       public:
         std::shared_ptr<RackTheme> getRackTheme (const std::string& path);

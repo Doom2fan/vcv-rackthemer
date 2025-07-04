@@ -29,6 +29,7 @@
 
 #include <optional>
 #include <regex>
+#include <type_traits>
 
 namespace rack_themer {
     template<class TPanel = widgets::SvgPanel>
@@ -38,14 +39,15 @@ namespace rack_themer {
         return panel;
     }
 
-    template<typename T>
-    struct SvgHelper {
+    template<typename T = rack::app::ModuleWidget*>
+    struct SvgHelper : T {
+        static_assert (std::is_convertible<T*, rack::app::ModuleWidget*>::value, "T* be convertible to rack::app::ModuleWidget*");
+
     private:
         ThemedSvg svg;
 
         rack::app::ModuleWidget* moduleWidget () {
-            auto t = static_cast<T*> (this);
-            return static_cast<rack::app::ModuleWidget*> (t);
+            return dynamic_cast<rack::app::ModuleWidget*> (this);
         }
 
         rack::math::Rect getShapeBoundsBox (NSVGshape* shape) {
@@ -68,7 +70,7 @@ namespace rack_themer {
         SvgHelper () : svg (nullptr, nullptr) { }
 
         void loadPanel (ThemedSvg svg) {
-            auto panel = static_cast<widgets::SvgPanel*> (moduleWidget ()->getPanel ());
+            auto panel = dynamic_cast<widgets::SvgPanel*> (moduleWidget ()->getPanel ());
             if (panel == nullptr) {
                 panel = createPanel (svg);
                 moduleWidget ()->setPanel (panel);
@@ -188,7 +190,7 @@ namespace rack_themer {
         std::vector<rack::math::Vec> findPrefixed (const std::string& prefix) {
             std::vector<rack::math::Vec> result;
 
-            findPrefixed (prefix, [&] (rack::math::Vec center) {
+            forEachPrefixed (prefix, [&] (unsigned int i, rack::math::Vec center) {
                 result.push_back (center);
             });
 
@@ -198,7 +200,7 @@ namespace rack_themer {
         std::vector<rack::math::Rect> findPrefixedBox (const std::string& prefix) {
             std::vector<rack::math::Rect> result;
 
-            findPrefixed (prefix, [&] (rack::math::Rect box) {
+            forEachPrefixed (prefix, [&] (unsigned int i, rack::math::Rect box) {
                 result.push_back (box);
             });
 

@@ -23,7 +23,7 @@
 namespace rack_themer {
     ThemeCache themeCache = ThemeCache ();
 
-    std::shared_ptr<RackTheme> ThemeCache::createRackTheme (std::string path) {
+    std::shared_ptr<RackTheme> ThemeCache::createRackTheme (const std::string& path) {
         if (path.empty ()) {
             auto nullTheme = std::make_shared<RackTheme> ();
             themeCache [path] = nullTheme;
@@ -39,9 +39,9 @@ namespace rack_themer {
         return theme;
     }
 
-    std::shared_ptr<ThemeableSvg> ThemeCache::createThemeableSvg (std::string path) {
+    std::shared_ptr<ThemeableSvg> ThemeCache::createThemeableSvg (const std::string& path) {
         auto handle = nsvgParseFromFile (path.c_str (), "px", rack::window::SVG_DPI);
-        if (!handle) {
+        if (handle == nullptr) {
             WARN ("Failed to load SVG %s", path.c_str ());
             return nullptr;
         }
@@ -71,6 +71,9 @@ namespace rack_themer {
     }
 
     ShapeInfo ThemeCache::getShapeInfo (const NSVGshape* shape) {
+        if (shape == nullptr)
+            return ShapeInfo ();
+
         if (auto infoSearch = shapeInfoMap.find (shape); infoSearch != shapeInfoMap.end ())
             return infoSearch->second;
 
