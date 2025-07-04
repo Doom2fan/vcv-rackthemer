@@ -28,8 +28,8 @@
 namespace rack_themer {
     struct ThemedSvg {
       public:
-        std::shared_ptr<ThemeableSvg> svg;
-        std::shared_ptr<RackTheme> theme;
+        std::shared_ptr<ThemeableSvg> svg = nullptr;
+        std::shared_ptr<RackTheme> theme = nullptr;
 
         ThemedSvg (std::shared_ptr<ThemeableSvg> svg, std::shared_ptr<RackTheme> theme) {
             this->svg = svg;

@@ -314,7 +314,7 @@ namespace widgets {
     }
 
     /*
-     * SvgPanel
+     * SvgSlider
      */
     SvgSlider::SvgSlider () {
         framebuffer = new rack::widget::FramebufferWidget;
