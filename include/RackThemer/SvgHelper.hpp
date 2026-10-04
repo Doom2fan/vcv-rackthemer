@@ -41,8 +41,6 @@ namespace rack_themer {
 
     template<typename T = rack::app::ModuleWidget*>
     struct SvgHelper : T {
-        static_assert (std::is_convertible<T*, rack::app::ModuleWidget*>::value, "T* be convertible to rack::app::ModuleWidget*");
-
     private:
         ThemedSvg svg;
 
@@ -50,7 +48,7 @@ namespace rack_themer {
             return dynamic_cast<rack::app::ModuleWidget*> (this);
         }
 
-        rack::math::Rect getShapeBoundsBox (NSVGshape* shape) {
+        static inline rack::math::Rect getShapeBoundsBox (NSVGshape* shape) {
             auto bounds = shape->bounds;
             return rack::math::Rect (
                 bounds [0], bounds [1],
@@ -58,7 +56,7 @@ namespace rack_themer {
             );
         }
 
-        rack::math::Vec getShapeBoundsCenter (NSVGshape* shape) {
+        static inline rack::math::Vec getShapeBoundsCenter (NSVGshape* shape) {
             auto bounds = shape->bounds;
             return rack::math::Vec (
                 (bounds [0] + bounds [2]) / 2,
@@ -70,6 +68,8 @@ namespace rack_themer {
         SvgHelper () : svg (nullptr, nullptr) { }
 
         void loadPanel (ThemedSvg svg) {
+            static_assert (std::is_convertible<T*, rack::app::ModuleWidget*>::value, "T* must be convertible to rack::app::ModuleWidget*");
+
             auto panel = dynamic_cast<widgets::SvgPanel*> (moduleWidget ()->getPanel ());
             if (panel == nullptr) {
                 panel = createPanel (svg);
@@ -81,7 +81,15 @@ namespace rack_themer {
         }
 
         void loadPanel (const std::string& filename, std::shared_ptr<RackTheme> theme) {
+            static_assert (std::is_convertible<T*, rack::app::ModuleWidget*>::value, "T* must be convertible to rack::app::ModuleWidget*");
+
             loadPanel (ThemedSvg (loadSvg (filename), theme));
+        }
+
+        void setSvg (ThemedSvg svg) {
+            static_assert (!std::is_convertible<T*, rack::app::ModuleWidget*>::value, "T* must not be convertible to rack::app::ModuleWidget*");
+
+            this->svg = svg;
         }
 
         void setTheme (std::shared_ptr<RackTheme> theme) { loadPanel (svg.withTheme (theme)); }

@@ -187,11 +187,10 @@ namespace rack_themer {
         if (vg == nullptr || handle == nullptr)
             return;
 
-        int shapeIndex = 0;
         Style shapeStyle;
 
         // Iterate shape linked list
-        for (auto shape = handle->shapes; shape; shape = shape->next, shapeIndex++) {
+        for (auto shape = handle->shapes; shape; shape = shape->next) {
             // Skip shapes with no paths
             if (shape->paths == nullptr)
                 continue;
